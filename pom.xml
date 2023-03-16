@@ -27,6 +27,7 @@
 
   <modules>
     <module>cassandra-demo</module>
+    <module>jpa-streamer-demo</module>
   </modules>
 
 </project>
