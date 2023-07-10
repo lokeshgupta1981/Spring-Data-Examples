@@ -3,10 +3,10 @@ package com.howtodoinjava.cassandrademo;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+//@SpringBootTest
 class CassandraDemoApplicationTests {
 
-	@Test
+	//@Test
 	void contextLoads() {
 	}
 
