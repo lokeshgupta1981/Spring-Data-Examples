@@ -6,5 +6,6 @@ import com.howtodoinjava.records.dto.CustomEmployeeRecord;
 import java.util.List;
 
 public interface CustomEmployeeRepository {
-    List<CustomEmployeeRecord> findAllEmployees();
+
+  List<CustomEmployeeRecord> findAllEmployees();
 }

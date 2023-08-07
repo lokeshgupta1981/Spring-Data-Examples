@@ -11,37 +11,39 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+@SuppressWarnings({"unchecked", "unused"})
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeService employeeService;
+  @Autowired
+  private EmployeeService employeeService;
 
-    @GetMapping("/employees/{name}")
-    public List<EmployeeRecord> findEmployeeByName(@PathVariable("name") String name) {
-        return employeeService.findEmployeeByName(name);
-    }
+  @GetMapping("/employees/{name}")
+  public List<EmployeeRecord> findEmployeeByName(@PathVariable("name") String name) {
+    return employeeService.findEmployeeByName(name);
+  }
 
-    @GetMapping("/employees")
-    public List<CustomEmployeeRecord> findAllEmployees() {
-        return employeeService.findAllEmployees();
-    }
+  @GetMapping("/employees")
+  public List<CustomEmployeeRecord> findAllEmployees() {
+    return employeeService.findAllEmployees();
+  }
 
-    @GetMapping("/employees/mapping")
-    public List<?> findAllEmployeeUsingMapping() {
-        return employeeService.findAllEmployeeUsingMapping();
-    }
+  @GetMapping("/employees/mapping")
+  public List<?> findAllEmployeeUsingMapping() {
+    return employeeService.findAllEmployeeUsingMapping();
+  }
 
-    @GetMapping("/employees/transformer")
-    public List<?> findAllEmployeeUsingTransformer() {
-        return employeeService.findAllEmployeeUsingTupleTransformer();
-    }
-    @GetMapping("/employee/{id}")
-    public EmployeeRecord findEmployeeById(@PathVariable("id") Long id) {
-        return employeeService.findEmployeeById(id);
-    }
+  @GetMapping("/employees/transformer")
+  public List<?> findAllEmployeeUsingTransformer() {
+    return employeeService.findAllEmployeeUsingTupleTransformer();
+  }
 
-    @GetMapping("/employees/salary/{salary}")
-    public List<EmployeeRecord> findAllEmployeeWithSalaryGreater(@PathVariable("salary") int salary) {
-        return employeeService.findAllEmployeeWithSalaryGreater(salary);
-    }
+  @GetMapping("/employee/{id}")
+  public EmployeeRecord findEmployeeById(@PathVariable("id") Long id) {
+    return employeeService.findEmployeeById(id);
+  }
+
+  @GetMapping("/employees/salary/{salary}")
+  public List<EmployeeRecord> findAllEmployeeWithSalaryGreater(@PathVariable("salary") int salary) {
+    return employeeService.findAllEmployeeWithSalaryGreater(salary);
+  }
 }

@@ -30,7 +30,7 @@
     <module>cassandra-demo</module>
     <module>jpa-streamer-demo</module>
     <module>spring-repositories</module>
-      <module>records-example</module>
+    <module>records-example</module>
   </modules>
 
   <dependencies>
