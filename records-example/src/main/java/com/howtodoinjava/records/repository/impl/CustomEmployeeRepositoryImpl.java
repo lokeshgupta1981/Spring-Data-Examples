@@ -9,19 +9,20 @@ import java.util.List;
 
 @Repository
 public class CustomEmployeeRepositoryImpl implements CustomEmployeeRepository {
-    private final JdbcTemplate jdbcTemplate;
 
-    public CustomEmployeeRepositoryImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+  private final JdbcTemplate jdbcTemplate;
 
-    public List<CustomEmployeeRecord> findAllEmployees() {
-        return jdbcTemplate.query(
-                "SELECT id, name FROM employee",
-                (rs, rowNum) -> new CustomEmployeeRecord(
-                        rs.getLong("id"),
-                        rs.getString("name")
-                )
-        );
-    }
+  public CustomEmployeeRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    this.jdbcTemplate = jdbcTemplate;
+  }
+
+  public List<CustomEmployeeRecord> findAllEmployees() {
+    return jdbcTemplate.query(
+        "SELECT id, name FROM employee",
+        (rs, rowNum) -> new CustomEmployeeRecord(
+            rs.getLong("id"),
+            rs.getString("name")
+        )
+    );
+  }
 }
