@@ -31,6 +31,7 @@
     <module>jpa-streamer-demo</module>
     <module>spring-repositories</module>
     <module>records-example</module>
+    <module>spring-audit-example</module>
   </modules>
 
   <dependencies>
