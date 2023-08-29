@@ -14,7 +14,7 @@ public class StudentService {
   @Autowired
   private StudentRepository studentRepository;
 
-  @Cacheable("nameById")
+  @Cacheable("StudentCache")
   public Student getName(Long id) {
 
     return studentRepository.findById(id)
