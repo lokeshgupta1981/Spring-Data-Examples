@@ -32,6 +32,7 @@
     <module>spring-repositories</module>
     <module>records-example</module>
     <module>spring-audit-example</module>
+    <module>caffeine-cache-example</module>
   </modules>
 
   <dependencies>
