@@ -5,11 +5,14 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.cache.transaction.TransactionAwareCacheManagerProxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableCaching
 @Configuration
+@EnableTransactionManagement
 public class CacheConfig {
 
   @Bean
@@ -23,6 +26,7 @@ public class CacheConfig {
   public CacheManager cacheManager(Caffeine caffeine) {
     CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
     caffeineCacheManager.setCaffeine(caffeine);
-    return caffeineCacheManager;
+    return new TransactionAwareCacheManagerProxy(caffeineCacheManager);
+    //return caffeineCacheManager;
   }
 }
