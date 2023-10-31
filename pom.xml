@@ -33,6 +33,7 @@
     <module>records-example</module>
     <module>spring-audit-example</module>
     <module>caffeine-cache-example</module>
+    <module>spring-elasticsearch-example</module>
   </modules>
 
   <dependencies>
