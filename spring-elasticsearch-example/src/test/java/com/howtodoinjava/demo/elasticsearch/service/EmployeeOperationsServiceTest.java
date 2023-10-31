@@ -1,18 +1,18 @@
 package com.howtodoinjava.demo.elasticsearch.service;
 
 import com.howtodoinjava.demo.elasticsearch.entities.Employee;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
-import org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.testcontainers.containers.GenericContainer;
+import org.springframework.util.Assert;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -25,24 +25,46 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EmployeeOperationsServiceTest {
 
-  //@Autowired DO NOT Autowire
   private EmployeeOperationsService employeeOperationsService;
 
+  /**
+   * GenericContainer issue with elasticsearch --
+   * https://stackoverflow.com/questions/63953500/testcontainers-timed-out-waiting-for-container-port-to-open-with-elasticsearch
+   */
   @Container
-  public static GenericContainer<?> elasticsearchContainer = new GenericContainer<>(
-    "docker.elastic.co/elasticsearch/elasticsearch:8.10.4")
-    .withExposedPorts(9200)
-    .withEnv("discovery.type", "single-node")
-    .withEnv("xpack.security.enabled", "false");
+  public static ElasticsearchContainer elasticsearchContainer = new ElasticsearchContainer(
+          "docker.elastic.co/elasticsearch/elasticsearch:8.10.4")
+          .withExposedPorts(9200)
+          .withEnv("discovery.type", "single-node")
+          .withEnv("xpack.security.enabled", "false");
+
+
+  @Configuration
+  static class TestConfiguration extends ElasticsearchConfiguration {
+    @Override
+    public ClientConfiguration clientConfiguration() {
+
+      elasticsearchContainer.start();
+      Assert.notNull(elasticsearchContainer, "TestContainer is not initialized!");
+
+      return ClientConfiguration.builder() //
+              .connectedTo(elasticsearchContainer.getContainerIpAddress() + ":" +
+                      elasticsearchContainer.getMappedPort(9200)) //
+              .build();
+    }
+  }
+
+  @Autowired
+  ElasticsearchOperations operations;
 
   @BeforeAll
   void setup() {
-    ClientConfiguration clientConfiguration = ClientConfiguration
-        .builder()
-        .connectedTo(elasticsearchContainer.getContainerIpAddress() + ":" + elasticsearchContainer.getMappedPort(9200))
-        .build();
-    /*ElasticsearchOperations elasticsearchOperations = new ElasticsearchRestTemplate();
-    this.employeeOperationsService = new ElasticsearchRestTemplate(client);*/
+    this.employeeOperationsService = new EmployeeOperationsService(operations);
+  }
+
+  @AfterAll
+  public void cleanup() {
+    elasticsearchContainer.stop();
   }
 
   @Test

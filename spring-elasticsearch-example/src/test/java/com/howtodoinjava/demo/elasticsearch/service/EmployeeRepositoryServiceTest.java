@@ -1,19 +1,70 @@
 package com.howtodoinjava.demo.elasticsearch.service;
 
 import com.howtodoinjava.demo.elasticsearch.entities.Employee;
+import com.howtodoinjava.demo.elasticsearch.repository.EmployeeRepository;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.elasticsearch.client.ClientConfiguration;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+import org.springframework.util.Assert;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Testcontainers
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EmployeeRepositoryServiceTest {
 
-    @Autowired
     private EmployeeRepositoryService employeeRepositoryService;
+
+    @Container
+    public static ElasticsearchContainer elasticsearchContainer = new ElasticsearchContainer(
+            "docker.elastic.co/elasticsearch/elasticsearch:8.10.4")
+            .withExposedPorts(9200)
+            .withEnv("discovery.type", "single-node")
+            .withEnv("xpack.security.enabled", "false");
+
+
+    @Configuration
+    @EnableElasticsearchRepositories(basePackages = "com.howtodoinjava.demo.elasticsearch")
+    static class TestConfiguration extends ElasticsearchConfiguration {
+        @Override
+        public ClientConfiguration clientConfiguration() {
+
+            elasticsearchContainer.start();
+            Assert.notNull(elasticsearchContainer, "TestContainer is not initialized!");
+
+            return ClientConfiguration.builder() //
+                    .connectedTo(elasticsearchContainer.getContainerIpAddress() + ":" +
+                            elasticsearchContainer.getMappedPort(9200)) //
+                    .build();
+        }
+    }
+
+    @Autowired
+    EmployeeRepository employeeRepository;
+
+    @BeforeAll
+    public void setup() {
+        this.employeeRepositoryService = new EmployeeRepositoryService(employeeRepository);
+    }
+
+    @AfterAll
+    public void cleanup() {
+        elasticsearchContainer.stop();
+    }
 
     @Test
     void createEmployee() {
