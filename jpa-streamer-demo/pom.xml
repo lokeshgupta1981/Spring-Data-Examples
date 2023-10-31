@@ -17,12 +17,6 @@
   <description>Demo project for JPA Streamer</description>
   <url>https://howtodoinjava.com</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>21</maven.compiler.source>
-    <maven.compiler.target>21</maven.compiler.target>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -41,6 +35,7 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <optional>true</optional>
+      <version>1.18.30</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
