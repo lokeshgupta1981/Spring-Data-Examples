@@ -189,4 +189,26 @@ class EmployeeRepositoryServiceTest {
 
         assertEquals(2, fetchedEmployees.size());
     }
+
+    @Test
+    public void getEmployeeUsingScroll() throws InterruptedException {
+
+        Employee employee = new Employee();
+        employee.setName("Bruce");
+        employee.setSalary(20000);
+        Employee john = employeeRepositoryService.createEmployee(employee);
+
+        Employee employee2 = new Employee();
+        employee2.setName("Clark");
+        employee2.setSalary(20000);
+        Employee ronaldo = employeeRepositoryService.createEmployee(employee2);
+
+        Thread.sleep(1000);
+        List<Employee> fetchedEmployees = employeeRepositoryService.getEmployeeUsingScroll(20000L);
+
+        employeeRepositoryService.deleteEmployee(john.getEmployeeId());
+        employeeRepositoryService.deleteEmployee(ronaldo.getEmployeeId());
+
+        assertEquals(2, fetchedEmployees.size());
+    }
 }

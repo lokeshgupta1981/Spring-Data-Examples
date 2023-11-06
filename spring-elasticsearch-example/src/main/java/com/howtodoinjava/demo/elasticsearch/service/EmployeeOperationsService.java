@@ -76,7 +76,6 @@ public class EmployeeOperationsService {
     }
 
     public List<Employee> getEmployeeUsingScroll() {
-        IndexCoordinates index = IndexCoordinates.of("employees");
 
         Query searchQuery = NativeQuery.builder()
                 .withQuery(q -> q
@@ -85,8 +84,7 @@ public class EmployeeOperationsService {
                 .withPageable(PageRequest.of(0, 10))
                 .build();
 
-        SearchHitsIterator<Employee> stream = elasticsearchOperations.searchForStream(searchQuery, Employee.class,
-                index);
+        SearchHitsIterator<Employee> stream = elasticsearchOperations.searchForStream(searchQuery, Employee.class);
 
         List<Employee> employees = new ArrayList<>();
         while (stream.hasNext()) {

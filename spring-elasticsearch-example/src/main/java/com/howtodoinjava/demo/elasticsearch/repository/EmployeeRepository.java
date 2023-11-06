@@ -7,6 +7,7 @@ import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public interface EmployeeRepository extends ElasticsearchRepository<Employee, String> {
 
@@ -16,4 +17,6 @@ public interface EmployeeRepository extends ElasticsearchRepository<Employee, St
 
     @Query("{\"match\": {\"salary\": {\"query\": \"?0\"}}}")
     Page<Employee> findBySalary(Long salary, Pageable pageable);
+
+    Stream<Employee> findAllBySalary(Long salary);
 }
