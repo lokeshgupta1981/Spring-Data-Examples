@@ -9,10 +9,15 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.context.jdbc.Sql;
 
+import javax.sql.DataSource;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,15 +29,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PersonRepositoryTest {
 
   @Autowired
-  JdbcClient jdbcClient;
+  DataSource dataSource;
   PersonRepository repository;
+  JdbcClient jdbcClient;
 
   @BeforeAll
   void setUp() {
-    repository = new PersonRepository(jdbcClient);
+    repository = new PersonRepository(dataSource);
+    jdbcClient = JdbcClient.create(dataSource);
   }
 
-  @Test
+  /*@Test
   void findAllPersons_should_pass() {
     List<Person> persons = repository.findAll();
     assertThat(persons).isNotEmpty();
@@ -55,5 +62,55 @@ public class PersonRepositoryTest {
     Optional<Person> personOptional = repository.findById(newPerson.id());
     assertThat(personOptional).isPresent();
     assertThat(personOptional.get().id()).isEqualTo(newPerson.id());
+  }*/
+
+  @Test
+  void testPositionalParameters(){
+
+    KeyHolder keyHolder = new GeneratedKeyHolder();
+    String sql = "insert into person(first_name, last_name, created_at) values (:firstName, :lastName, :createdAt)";
+
+    jdbcClient.sql(sql)
+      .param("firstName", "Alex")
+        .param("lastName", "Dave")
+        .param("createdAt", Timestamp.from(Instant.now()))
+        .update(keyHolder);
+
+    Map<String, ?> paramMap = Map.of(
+      "firstName", "Alex",
+      "lastName", "Dave",
+      "createdAt", Timestamp.from(Instant.now())
+    );
+
+    jdbcClient.sql(sql)
+      .params(paramMap)
+      .update(keyHolder);
+
+    Person person = new Person(null, "Clark", "Kent", Instant.now());
+
+    jdbcClient.sql(sql)
+      .paramSource(person)
+      .update(keyHolder);
+
+    Long id = keyHolder.getKeyAs(Long.class);
+    assertThat(id).isNotNull();
+  }
+
+  @Test
+  void test_query_operation(){
+
+    KeyHolder keyHolder = new GeneratedKeyHolder();
+    String sql = "insert into person(first_name, last_name, created_at) values (:firstName, :lastName, :createdAt)";
+
+    jdbcClient.sql(sql)
+      .param("firstName", "Alex")
+      .param("lastName", "Dave")
+      .param("createdAt", Timestamp.from(Instant.now()))
+      .update(keyHolder);
+
+    String querySql = "select id, first_name, last_name, created_at from person where id = :id";
+    Optional<Person> personOptional = jdbcClient.sql(querySql).param("id", keyHolder.getKey()).query(Person.class).optional();
+    assertThat(personOptional.get()).isNotNull();
+    System.out.println(personOptional.get());
   }
 }

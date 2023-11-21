@@ -10,12 +10,9 @@ import org.springframework.jdbc.core.RowMapper;
 
 public class PersonRowMapper implements RowMapper<Person> {
 
+  private PersonRowMapper() {}
+
   private static final PersonRowMapper INSTANCE = new PersonRowMapper();
-
-  private PersonRowMapper() {
-    // private constructor to prevent external instantiation
-  }
-
   public static PersonRowMapper getInstance() {
     return INSTANCE;
   }

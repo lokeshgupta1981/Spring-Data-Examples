@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +22,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EmployeeOperationsServiceTest {
 
@@ -211,5 +212,21 @@ class EmployeeOperationsServiceTest {
     employeeOperationsService.deleteEmployee(ronaldo.getEmployeeId());
 
     assertEquals(2, fetchedEmployees.size());
+  }
+
+  private boolean dockerIsAvailable() {
+    try {
+      // Run "docker --version" command
+      Process process = Runtime.getRuntime().exec("docker --version");
+
+      // Wait for the process to finish
+      int exitCode = process.waitFor();
+
+      // Check if the exit code is 0 (success)
+      return exitCode == 0;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
   }
 }

@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +17,8 @@ public class PersonRepository {
   private final JdbcClient jdbcClient;
   public PersonRowMapper personRowMapper = PersonRowMapper.getInstance();
 
-  public PersonRepository(JdbcClient jdbcClient) {
-    this.jdbcClient = jdbcClient;
+  public PersonRepository(DataSource dataSource) {
+    this.jdbcClient = JdbcClient.create(dataSource);
   }
 
   public List<Person> findAll() {
