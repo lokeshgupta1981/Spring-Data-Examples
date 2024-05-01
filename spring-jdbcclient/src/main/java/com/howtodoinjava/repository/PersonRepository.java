@@ -26,6 +26,11 @@ public class PersonRepository {
     return jdbcClient.sql(sql).query(personRowMapper).list();
   }
 
+  public List<Person> findAllByFirstName(String searchTerm) {
+    String sql = "select id, first_name, last_name, created_at from person where first_name like concat('%', :searchTerm,'%')";
+    return jdbcClient.sql(sql).param("searchTerm", searchTerm).query(personRowMapper).list();
+  }
+
   public Optional<Person> findById(Long id) {
     String sql = "select id, first_name, last_name, created_at from person where id = :id";
     return jdbcClient.sql(sql).param("id", id).query(personRowMapper).optional();

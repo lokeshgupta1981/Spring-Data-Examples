@@ -39,6 +39,32 @@ public class PersonRepositoryTest {
     jdbcClient = JdbcClient.create(dataSource);
   }
 
+  @Test
+  void findAllPersons_should_pass() {
+    List<Person> persons = repository.findAll();
+    assertThat(persons).isNotEmpty();
+    assertThat(persons).hasSize(3 );
+  }
+
+  @Test
+  void findAllPersonsByFirstName_should_pass() {
+    List<Person> persons = repository.findAllByFirstName("Lokesh");
+    assertThat(persons).isNotEmpty();
+    assertThat(persons).hasSize(1);
+    assertThat(persons.get(0).firstName()).isEqualTo("Lokesh");
+  }
+
+  @Test
+  void findPerson_by_id_should_pass() {
+    Person person = new Person(null, "Clark", "Kent", Instant.now());
+    Person newPerson = repository.save(person);
+    assertThat(newPerson.id()).isNotNull();
+
+    Optional<Person> personOptional = repository.findById(newPerson.id());
+    assertThat(personOptional).isPresent();
+    assertThat(personOptional.get().id()).isEqualTo(newPerson.id());
+  }
+
   /*@Test
   void findAllPersons_should_pass() {
     List<Person> persons = repository.findAll();
