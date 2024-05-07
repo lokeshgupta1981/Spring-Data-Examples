@@ -52,8 +52,38 @@ public class PersonJdbcClientRepository {
 
   // LIKE Operator
 
-  public List<Person> findAllByFirstName(String searchTerm) {
-    String sql = "select id, first_name, last_name, created_at from person where first_name like concat('%', :searchTerm,'%')";
-    return jdbcClient.sql(sql).param("searchTerm", searchTerm).query(personRowMapper).list();
+  public List<Person> findAllByFieldNameContaining(String fieldName, String searchTerm) {
+    String sql = "select id, first_name, last_name, created_at from person where " + fieldName + " like concat('%', :searchTerm,'%')";
+    return jdbcClient.sql(sql)
+        .param("searchTerm", searchTerm)
+        .query(personRowMapper)
+        .list();
+  }
+
+  public List<Person> findAllByFieldNameStartsWith(String fieldName, String searchTerm) {
+    String sql = "select id, first_name, last_name, created_at from person where " + fieldName + " like concat('%', :searchTerm)";
+    return jdbcClient.sql(sql)
+        .param("searchTerm", searchTerm)
+        .query(personRowMapper)
+        .list();
+  }
+
+  public List<Person> findAllByFieldNameEndsWith(String fieldName, String searchTerm) {
+    String sql = "select id, first_name, last_name, created_at from person where " + fieldName + " like concat(:searchTerm, '%')";
+    return jdbcClient.sql(sql)
+        .param("searchTerm", searchTerm)
+        .query(personRowMapper)
+        .list();
+  }
+
+  public List<Person> findAllByFirstNameContaining(String searchTerm) {
+    String sql = """
+        select id, first_name, last_name, created_at \
+        from person \
+        where first_name like concat('%', :searchTerm,'%')""";
+    return jdbcClient.sql(sql)
+        .param("searchTerm", searchTerm)
+        .query(personRowMapper)
+        .list();
   }
 }

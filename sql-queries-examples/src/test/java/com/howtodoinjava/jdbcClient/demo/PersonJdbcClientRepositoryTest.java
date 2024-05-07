@@ -44,15 +44,22 @@ public class PersonJdbcClientRepositoryTest {
   void findAllPersons_should_pass() {
     List<Person> persons = repository.findAll();
     assertThat(persons).isNotEmpty();
-    assertThat(persons).hasSize(5);
+    assertThat(persons).hasSize(7);
   }
 
   @Test
   void findAllPersonsByFirstName_should_pass() {
-    List<Person> persons = repository.findAllByFirstName("Al");
+    List<Person> persons = repository.findAllByFieldNameContaining("first_name", "Al");
     assertThat(persons).isNotEmpty();
     assertThat(persons).hasSize(1);
     assertThat(persons.get(0).getFirstName()).isEqualTo("Alex");
+  }
+
+  @Test
+  void addNewPerson_should_pass() {
+    Person person = new Person(null, "Clark", "Kent", Instant.now());
+    Person newPerson = repository.save(person);
+    assertThat(newPerson.getId()).isNotNull();
   }
 
   @Test
@@ -65,31 +72,6 @@ public class PersonJdbcClientRepositoryTest {
     assertThat(personOptional).isPresent();
     assertThat(personOptional.get().getId()).isEqualTo(newPerson.getId());
   }
-
-  /*@Test
-  void findAllPersons_should_pass() {
-    List<Person> persons = repository.findAll();
-    assertThat(persons).isNotEmpty();
-    assertThat(persons).hasSize(3 );
-  }
-
-  @Test
-  void addNewPerson_should_pass() {
-    Person person = new Person(null, "Clark", "Kent", Instant.now());
-    Person newPerson = repository.save(person);
-    assertThat(newPerson.id()).isNotNull();
-  }
-
-  @Test
-  void findPerson_by_id_should_pass() {
-    Person person = new Person(null, "Clark", "Kent", Instant.now());
-    Person newPerson = repository.save(person);
-    assertThat(newPerson.id()).isNotNull();
-
-    Optional<Person> personOptional = repository.findById(newPerson.id());
-    assertThat(personOptional).isPresent();
-    assertThat(personOptional.get().id()).isEqualTo(newPerson.id());
-  }*/
 
   @Test
   void testPositionalParameters(){
@@ -139,5 +121,16 @@ public class PersonJdbcClientRepositoryTest {
     Optional<Person> personOptional = jdbcClient.sql(querySql).param("id", keyHolder.getKey()).query(Person.class).optional();
     assertThat(personOptional.get()).isNotNull();
     System.out.println(personOptional.get());
+  }
+
+  // LIKE Queries
+
+  @Test
+  void test_like_query(){
+    String fieldName = "first_name";
+    String searchTerm = "Ale";
+    List<Person> people = repository.findAllByFieldNameContaining(fieldName, searchTerm);
+    assertThat(people).isNotNull();
+    assertThat(people.size()).isEqualTo(1);
   }
 }

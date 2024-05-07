@@ -19,10 +19,18 @@ public class PersonJpaRepositoryTest {
   PersonJpaRepository repository;
 
   @Test
-  void findAllPersons_should_pass() {
+  void findAllPersonsFirstNameContaining_should_pass() {
 
-    List<Person> persons = repository.findAll();
+    List<Person> persons = repository.findByFirstNameContaining("Ale");
     assertThat(persons).isNotEmpty();
-    assertThat(persons).hasSize(5);
+    assertThat(persons).hasSize(1);
+  }
+
+  @Test
+  void findAllPersonsFirstNameLike_should_pass() {
+
+    List<Person> persons = repository.findByFirstNameLike("%Ale%");
+    assertThat(persons).isNotEmpty();
+    assertThat(persons).hasSize(1);
   }
 }
